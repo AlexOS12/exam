@@ -16,9 +16,9 @@ public:
 public slots:
     void SlotRead();
     void SlotClose();
-private:
     void sift(int *A, int i, int m, int size);
     void heap_sort(int *A, int n, int size);
+private:
     void parser(QString msg);
 signals:
     void Close(Client* client);
