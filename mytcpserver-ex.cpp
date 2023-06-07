@@ -1,4 +1,4 @@
-#include "mytcpserver.h"
+#include "mytcpserver-ex.h"
 #include <QDebug>
 #include <QCoreApplication>
 
@@ -13,7 +13,7 @@ MyTcpServer::MyTcpServer(QObject *parent) : QObject(parent){
     connect(mTcpServer, &QTcpServer::newConnection,
             this, &MyTcpServer::slotNewConnection);
 
-    if(!mTcpServer->listen(QHostAddress::Any, 33333)){
+    if(!mTcpServer->listen(QHostAddress::Any, 34567)){
         qDebug() << "server is not started";
     } else {
         server_status=1;
@@ -24,22 +24,21 @@ MyTcpServer::MyTcpServer(QObject *parent) : QObject(parent){
 void MyTcpServer::slotNewConnection(){
     if(server_status==1){
         mTcpSocket = mTcpServer->nextPendingConnection();
-        mTcpSocket->write("Hello, World!!! I am echo server!\r\n");
-        connect(mTcpSocket, &QTcpSocket::readyRead,
-                this,&MyTcpServer::slotServerRead);
-        connect(mTcpSocket,&QTcpSocket::disconnected,
-                this,&MyTcpServer::slotClientDisconnected);
+        Client* client = new Client(mTcpSocket);
+        clnts.insert(client->Socket->socketDescriptor(), client);
+        connect(client, &Client::Close, this, &MyTcpServer::slotClientDisconnected);
+        mTcpSocket->write("Well CUM");
     }
 }
 
 void MyTcpServer::slotServerRead(){
-    while(mTcpSocket->bytesAvailable()>0)
-    {
-        QByteArray array =mTcpSocket->readAll();
-        mTcpSocket->write(array);
+    while (mTcpSocket->bytesAvailable() > 0) {
+            QByteArray command = mTcpSocket->readAll();
+            qDebug() << "[CLIENT]" << command;
     }
 }
 
 void MyTcpServer::slotClientDisconnected(){
     mTcpSocket->close();
+    qDebug() << "Client disconnected";
 }
