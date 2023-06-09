@@ -27,7 +27,7 @@ void MyTcpServer::slotNewConnection(){
         Client* client = new Client(mTcpSocket);
         clnts.insert(client->Socket->socketDescriptor(), client);
         connect(client, &Client::Close, this, &MyTcpServer::slotClientDisconnected);
-        mTcpSocket->write("Well CUM");
+        mTcpSocket->write("Wellcome to server! \r\n");
     }
 }
 
